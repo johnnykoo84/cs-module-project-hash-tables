@@ -106,8 +106,26 @@ class HashTable:
         # fill this hash table entry in the right index of storage
         # this never consider any conflicts
         # this will overwrites whatever previously was in the index
-        self.storage[hash_index] = new_hash_table_entry
-        print('self.storage[hash_index]', self.storage[hash_index])
+        # self.storage[hash_index] = new_hash_table_entry
+        # print('self.storage[hash_index]', self.storage[hash_index])
+
+        # see if the stoarge with given index exist
+        # if not, no worries
+        # if does exist, key is different then we put the new hash table entry in the next
+        # if does exist, and the key is the same, overwrites it
+        if self.storage[hash_index]:
+            print(f'self.storage[hash_index] exist and key is different')
+            current = self.storage[hash_index]
+            while current:
+                if current.key == key:
+                    current.value = value
+                    return
+                if not current.next:
+                    current.next = new_hash_table_entry
+                    return
+                current = current.next
+        else:
+            self.storage[hash_index] = new_hash_table_entry
 
 
     def delete(self, key):
@@ -146,7 +164,20 @@ class HashTable:
             return None
         else:
             print('get value result: ', self.storage[hash_index].value)
-            return self.storage[hash_index].value
+            current = self.storage[hash_index]
+            while current:
+                print(f'now current is: {current.key} {current.value}')
+                # print(f'now current.next is: {current.next.key} {current.next.value}')
+                if current.key == key:
+                    print('found key!!')
+                    return current.value
+                current = current.next
+                if current:
+                    print(f'next current is {current.key} {current.value}')
+                else:
+                    print('current is None')
+                    
+            return None
 
 
     def resize(self, new_capacity):
