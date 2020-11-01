@@ -1,3 +1,5 @@
+from linked_list import LinkedList, Node
+print(LinkedList())
 class HashTableEntry:
     """
     Linked List hash table key/value pair
@@ -22,6 +24,11 @@ class HashTable:
 
     def __init__(self, capacity):
         # Your code here
+        if capacity > MIN_CAPACITY:
+            self.capacity = capacity
+        else:
+            self.capacity = MIN_CAPACITY
+        self.storage = [None] * self.capacity 
 
 
     def get_num_slots(self):
@@ -62,7 +69,14 @@ class HashTable:
 
         Implement this, and/or FNV-1.
         """
-        # Your code here
+        hash = 5381
+        for x in key:
+            # ord(x) simply returns the unicode rep of the
+            # character x
+            hash = (( hash << 5) + hash) + ord(x)
+        # Note to clamp the value so that the hash is 
+        # related to the power of 2
+        return hash & 0xFFFFFFFF
 
 
     def hash_index(self, key):
@@ -82,6 +96,18 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        print(f'put key: {key} and value: {value}')
+        # get hash index
+        hash_index = self.hash_index(key)
+        print('hash index', hash_index)
+        # create hash table entry with key and value
+        new_hash_table_entry = HashTableEntry(key, value)
+        
+        # fill this hash table entry in the right index of storage
+        # this never consider any conflicts
+        # this will overwrites whatever previously was in the index
+        self.storage[hash_index] = new_hash_table_entry
+        print('self.storage[hash_index]', self.storage[hash_index])
 
 
     def delete(self, key):
@@ -93,7 +119,11 @@ class HashTable:
         Implement this.
         """
         # Your code here
+        # get index
+        # delete it (update as None) simply
+        hash_index = self.hash_index(key)
 
+        self.storage[hash_index] = None
 
     def get(self, key):
         """
@@ -104,6 +134,19 @@ class HashTable:
         Implement this.
         """
         # Your code here
+
+        # get index
+        hash_index = self.hash_index(key)
+        
+        # look up from storage
+        # take key and value
+        # return value
+        # if none, return none
+        if self.storage[hash_index] == None:
+            return None
+        else:
+            print('get value result: ', self.storage[hash_index].value)
+            return self.storage[hash_index].value
 
 
     def resize(self, new_capacity):
@@ -119,8 +162,11 @@ class HashTable:
 
 if __name__ == "__main__":
     ht = HashTable(8)
-
+    print(ht.capacity)
+    print('before', ht.storage)
     ht.put("line_1", "'Twas brillig, and the slithy toves")
+    ht.put("line_1", "'Twas brillig, and the slithy toves")
+    print('after', ht.storage)
     ht.put("line_2", "Did gyre and gimble in the wabe:")
     ht.put("line_3", "All mimsy were the borogoves,")
     ht.put("line_4", "And the mome raths outgrabe.")
@@ -136,18 +182,19 @@ if __name__ == "__main__":
     print("")
 
     # Test storing beyond capacity
+    print('Test storing beyond capacity')
     for i in range(1, 13):
         print(ht.get(f"line_{i}"))
 
-    # Test resizing
-    old_capacity = ht.get_num_slots()
-    ht.resize(ht.capacity * 2)
-    new_capacity = ht.get_num_slots()
+    # # Test resizing
+    # old_capacity = ht.get_num_slots()
+    # ht.resize(ht.capacity * 2)
+    # new_capacity = ht.get_num_slots()
 
-    print(f"\nResized from {old_capacity} to {new_capacity}.\n")
+    # print(f"\nResized from {old_capacity} to {new_capacity}.\n")
 
-    # Test if data intact after resizing
-    for i in range(1, 13):
-        print(ht.get(f"line_{i}"))
+    # # Test if data intact after resizing
+    # for i in range(1, 13):
+    #     print(ht.get(f"line_{i}"))
 
-    print("")
+    # print("")
